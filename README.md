@@ -14,6 +14,7 @@ of files, ending in ".inc The layers are as follows:
 *Top to bottom
 
 CLASS			IN FILE				PURPOSE
+
 gnp_directory		gde.inc				maps a variable name to a GTCM_GNP object
 							according to naming conventions
 gnp_lock_manager	gnp_lock_manager_class.inc	coordinates locks among multiple servers
