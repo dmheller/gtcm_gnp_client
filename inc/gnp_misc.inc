@@ -1,12 +1,4 @@
 
-
-<?php
-
-require_once("constants.inc");
-require_once("exception.inc");
-
-?>
-
 <?php
 
 #####################

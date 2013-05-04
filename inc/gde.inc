@@ -2,10 +2,10 @@
 
 <?php
 
-require_once("gtcm_gnp_class.inc");
-require_once("constants.inc");
+
 require_once("exception.inc");
 require_once("config.inc");
+require_once("constants.inc"); 
 
 class GNP_DIRECTORY
 {

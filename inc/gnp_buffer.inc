@@ -1,16 +1,10 @@
 
 
-<?php
 
-require_once("constants.inc");
-require_once("gnp_misc.inc");
-require_once("exception.inc");
-require_once("tcp_socket.inc");
-require_once("util.inc");
-
-?>
 
 <?php
+
+
 
 define ("OP_OK", "\$ok = ((\$this->send()) && (\$this->receive()));");
 define ("CANCEL_OK", "\$ok = ((\$this->urgentSend()) && (\$this->receive()));");

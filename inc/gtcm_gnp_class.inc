@@ -1,12 +1,10 @@
 
 <?php
 
-require_once("tcp_socket.inc");
-require_once("exception.inc");
-require_once("constants.inc");
+require("tcp_socket.inc");
 require_once("util.inc");
 require_once("gnp_misc.inc");
-require_once("gnp_buffer.inc");
+require("gnp_buffer.inc");
 
 ?>
 

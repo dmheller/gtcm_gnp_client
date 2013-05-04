@@ -2,10 +2,7 @@
 
 <?php
 
-require_once("gtcm_gnp_class.inc");
-require_once("gnp_buffer.inc");
-require_once("constants.inc");
-require_once("exception.inc");
+require("gtcm_gnp_class.inc");
 
 ?>
 

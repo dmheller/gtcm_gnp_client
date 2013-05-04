@@ -3,10 +3,7 @@
 <?php
 
 register_shutdown_function("before_exit");
-require_once("constants.inc");
-require_once("gtcm_gnp_class.inc");
-require_once("exception.inc");
-require_once("gde.inc");
+require("gde.inc");
 
 //these consants control how errors are logged and reported, if not defined already, they should be defined here
 if(!defined("SILENT"))	

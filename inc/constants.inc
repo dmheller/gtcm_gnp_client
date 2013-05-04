@@ -4,8 +4,6 @@
 #################################################################################
 #			USER DEFINED CONSTANTS					#
 #################################################################################	
-//uncomment this to individually test modules
-#require_once ("config.inc");
 
 define ("CLIENT_WAIT_TIMEOUT", 	30);
 define ("NO_IMPLEMENT",  "Not implemented");

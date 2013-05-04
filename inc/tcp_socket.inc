@@ -2,14 +2,6 @@
 
 <?php
 
-require_once("exception.inc");
-require_once("constants.inc");
-require_once("util.inc");
-
-?>
-
-<?php
-
 /* this class doesn't throwit any m_exception to upper level classes, because any socket-related error is deemed fatal */
 class TCP_SOCKET
 {
