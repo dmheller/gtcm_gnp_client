@@ -97,7 +97,6 @@ public	function GET($name_array)
 	*  		return the value if successful
 			return OPERATION_FAILURE if other non-fatal error occurred.
 	*  usage:	$value = $this->ORDER(array of name and subscripts)
-	*  note:	all global GTCM_GNP objects will be examined
 	*/
 public	function ORDER($name_array)
 	{
@@ -115,7 +114,6 @@ public	function ORDER($name_array)
 	*  		return the value if successful
 			return OPERATION_FAILURE if other non-fatal error occurred.
 	*  usage:	$value = $this->PREV(array of name ans subscripts)
-	*  note:	all global GTCM_GNP objects will be examined
 	*/
 public	function PREV($name_array)
 	{
@@ -185,7 +183,6 @@ public	function PUT($name_array, $val)
 	*  		return the value if successful
 			return OPERATION_FAILURE if other non-fatal error occurred.
 	*  usage:	$value = $this->QUERY(array of name and subscripts)
-	*  note:	all global GTCM_GNP objects will be examined
 	*/
 public	function QUERY($name_array)
 	{
