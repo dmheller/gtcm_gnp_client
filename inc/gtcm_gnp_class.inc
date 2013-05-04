@@ -1,4 +1,3 @@
-
 <?php
 
 require("tcp_socket.inc");
