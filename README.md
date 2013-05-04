@@ -34,15 +34,15 @@ exception		exception.inc			reports and logs error messages
 [CHANGES]
 
 
-The application no longer depends on having register globals set to "On" making$
-more production level (and more secure) ready. The library will now also work o$
-now allows the ability to create scripts that can run without user intervention$
-utility. The library now conforms more closely to proper OOP programming practi$
-classes defined in gnp_misc. The application has been tested on php 5.3.10 . It$
-fine on 5.4 also. The program has also been checked with E_STRICT E_ALL active $
-reported. The demonstration script provided (index.php) does however emit notic$
-variable it would not be a trivial task to eliminate those however. There is a $
-that demonstrates how to use this interface.
+The application no longer depends on having register globals set to "On" making it
+more production level (and more secure) ready. The library will now also works on
+the command line giving the ability to create scripts that can run without user 
+intervention. The application has been tested on php 5.3.10 . It should work
+fine on 5.4 also. The program has also been checked with E_STRICT E_ALL activared
+in php no notices or errors are reported. The demonstration script provided (index.php)
+does however emit notices "variable undefined" it would not be a trivial task to 
+eliminate those however. A test script is included (test_client.php) that demonstrates 
+how to use this interface.
 
 [INSTALLATION]
 
@@ -69,8 +69,9 @@ include_path            = ".:/usr/share/php:/var/www/gtcm_gnp_client/inc"
 
 if you plan on running scripts on the command line also you have to also modify /etc/php5/cli/php.ini.  
 
-7. Register Globals can and should be set to Off in this release and MAGIC QUOTES has to be DISABLED to use the 
-M demonstration application included in this package otherwise it will cause BIG problems!
+7. Register Globals can and should be set to Off in this release and MAGIC QUOTES has to be DISABLED 
+to use the M demonstration application included in this package otherwise it will cause BIG problems!
+
 8. Create an empty error.log file in /var/www/gtcm_gnp_client. Change the
 permissions on this file to be world writable. For example:
 
@@ -144,9 +145,6 @@ To test the functionality of lock commands in the demo application (M syntax con
 launch a regular GTM client so that it can hold the lock for a sufficiently long period of time. 
 
 [KNOWN BUGS]
-
-
-Quotes should not be given even string data type is used.
 
 $ORDER prints entire key instead of the subscript itself.
 
