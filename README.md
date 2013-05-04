@@ -8,23 +8,8 @@ but it is expected to run on a Windows based web-server too.
 
 [CONTENTS]
 
-The file phpgtcm.tar.gz contains all the source PHP scripts that define the PHP-GTCM interface, 
-as well as all the application related files. The PHP-GTCM interface is comprised of
-several layered classes, which are listed in class.list. The classes are distributed into a number
-of files, ending in ".inc". The layers are as follows:
-
-[CHANGES]
-
-
-The application no longer depends on having register globals set to "On" making this library 
-more production level (and more secure) ready. The library will now also work on the command line which 
-now allows the ability to create scripts that can run without user intervention via cron or other 
-utility. The library now conforms more closely to proper OOP programming practices, except for the 
-classes defined in gnp_misc. The application has been tested on php 5.3.10 . It should work just 
-fine on 5.4 also. The program has also been checked will E_STRICT E_ALL active and not notices are 
-reported. The demonstration script provided (index.php) does however emit notices about undefined
-variable it would not be a trivial task to eliminate those however. There is a test script provided
-that demonstrates how to use this interface.
+The PHP-GTCM interface is comprised of several layered classes,  The classes are distributed into a number
+of files, ending in ".inc The layers are as follows:
 
 *Top to bottom
 
@@ -46,6 +31,18 @@ protocol		gnp_misc.inc			helper data structures that are defined by GNP
 
 exception		exception.inc			reports and logs error messages
 
+[CHANGES]
+
+
+The application no longer depends on having register globals set to "On" making$
+more production level (and more secure) ready. The library will now also work o$
+now allows the ability to create scripts that can run without user intervention$
+utility. The library now conforms more closely to proper OOP programming practi$
+classes defined in gnp_misc. The application has been tested on php 5.3.10 . It$
+fine on 5.4 also. The program has also been checked with E_STRICT E_ALL active $
+reported. The demonstration script provided (index.php) does however emit notic$
+variable it would not be a trivial task to eliminate those however. There is a $
+that demonstrates how to use this interface.
 
 [INSTALLATION]
 
@@ -59,10 +56,9 @@ gtcm_gnp_client)
 under DocumentRoot. For example, if DocumentRoot on your system is
 /var/www, create /var/www/gtcm_gnp_client.
 
-4. Copy the phpgtcm.tar.gz file into /var/www/html/gtcm_gnp_client
+4. Copy all the files into /var/www/html/gtcm_gnp_client
 
-5. Extract the files using gunzip and tar -xvf
-Verify that index.php is under /var/www/gtcm_gnp_client and *.inc under ./inc
+5. Verify that index.php is under /var/www/gtcm_gnp_client and *.inc under ./inc
 subdirectory.
 
 6. /var/www/gtcm_gnp_client/inc has some files for the PHP-GTCM client interface. 
