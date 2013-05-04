@@ -58,18 +58,18 @@ gtcm_gnp_client)
 under DocumentRoot. For example, if DocumentRoot on your system is
 /var/www, create /var/www/gtcm_gnp_client.
 
-4. Copy all the files into /var/www/html/gtcm_gnp_client
+4. Copy all the files into /var/www/gtcm_gnp_client
 
 5. Verify that index.php is under /var/www/gtcm_gnp_client and *.inc under ./inc
 subdirectory.
 
-6. /var/www/gtcm_gnp_client/inc has some files for the PHP-GTCM client interface. 
+6. The directory /var/www/gtcm_gnp_client/inc has some files for the PHP-GTCM client interface. 
 Add appropriate entry in /etc/php5/apache2/php.ini so that these files can be located by
 PHP. (php.ini could be some other place for your system.) For example:
 
 include_path            = ".:/usr/share/php:/var/www/gtcm_gnp_client/inc"
 
-if you plan on running scripts on the command line also you have to also modify /etc/php5/cli/php.ini.  
+if you plan on running scripts on the command line, you have to also modify /etc/php5/cli/php.ini.  
 
 7. Register Globals can and should be set to Off in this release and MAGIC QUOTES has to be DISABLED 
 to use the M demonstration application included in this package otherwise it will cause BIG problems!
@@ -131,7 +131,7 @@ screen or both. To find out whether $ret is an error, use
 	?>
 
 The PHP client behaves differently from the GT.M client when it comes to timed
-locks. The interrupt driven approach used by GT.M client was not easily
+locks. The interrupt driven approach used by GT.M clients was not easily
 replicated into the PHP environment. Instead of the GT.M client approach, the
 PHP client sets a timer so that when a lock with no time limit is specified, the
 client waits for 30 seconds for a response from the server after sending an
