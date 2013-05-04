@@ -117,9 +117,6 @@ Read the in-file documentation (such as file header, function header, comments),
 specification for details of the interface. Normally the class methods listed as public are supposed
 to be used by higher level application programs, whereas there is nothing to prevent one from using all
 other functions, thanks to PHP. Some test scripts are provided in the test directory to serve as examples.
-
-To write your own application using this interface, only the files under
-include directory are needed.
 util.inc is the only file that needs to be explicitly included for everything else to work. 
 
 Functions in gtcm_gnp class and gnp_lock_manager class generally return OPERATION_FAILURE (a defined
