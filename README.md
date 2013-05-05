@@ -13,25 +13,25 @@ of files, ending in ".inc The layers are as follows:
 
 *Top to bottom
 
-CLASS                   IN FILE	                        PURPOSE
+CLASS                             IN FILE	                        PURPOSE
 
-gnp_directory           gde.inc	                        maps a variable name to a GTCM_GNP object
-							according to naming conventions
+gnp_directory                     gde.inc	                        maps a variable name to a GTCM_GNP object
+							                according to naming conventions
 
-gnp_lock_manager        gnp_lock_manager_class.inc      coordinates locks among multiple servers
+gnp_lock_manager                  gnp_lock_manager_class.inc            coordinates locks among multiple servers
 
-gtcm_gnp                gtcm_gnp_class.inc              main interface for individual GNP messages
+gtcm_gnp                          gtcm_gnp_class.inc                    main interface for individual GNP messages
 
-gnp_buffer              gnp_buffer.inc                  performs message formatting
+gnp_buffer                        gnp_buffer.inc                        performs message formatting
 
-tcp_socket              tcp_socket.inc                  abstracts tcp socket behavior
+tcp_socket                        tcp_socket.inc                        abstracts tcp socket behavior
 
 subsc
 gds
 region_info
-protocol                gnp_misc.inc                    helper data structures that are defined by GNP
+protocol                          gnp_misc.inc                          helper data structures that are defined by GNP
 
-exception               exception.inc                   reports and logs error messages
+exception                         exception.inc                         reports and logs error messages
 
 [CHANGES]
 
