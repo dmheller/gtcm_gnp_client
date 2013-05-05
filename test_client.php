@@ -45,8 +45,8 @@ class timer {
 require ("util.inc");
 $lockmgr = new GNP_LOCK_MANAGER();
 $db1 = new GTCM_GNP("db1", DB1, HOST1, PORTNO);
-$db2 = new GTCM_GNP("db2", DB2, HOST2, PORTNO);
-
+/*$db2 = new GTCM_GNP("db2", DB2, HOST2, PORTNO);
+*/
 echo "> lock ^a:0<br>\n";
 $ret = $lockmgr->lockAddImmed("db1", array(array('a')));
 if(!strcmp($ret, OPERATION_FAILURE))
@@ -59,7 +59,7 @@ else
 echo "Sleeping for 3 seconds...<br>\n";
 sleep(3);
 echo "> lock +^b:0<br>\n";
-$ret = $lockmgr->lockIncrAddImmed("db2", array(array('b')));
+$ret = $lockmgr->lockIncrAddImmed("db1", array(array('b')));
 
 if (!strcmp($ret, OPERATION_FAILURE))
 	echo "Error<br>\n";
@@ -68,10 +68,10 @@ elseif($ret)
 else echo "Nope<br>\n";
 
 echo "> lock +^b:20<br>\n";
-$ret = $lockmgr->lockIncrAdd("db2",array(array('b')), 20);
+$ret = $lockmgr->lockIncrAdd("db1",array(array('b')), 20);
 
 echo "> unlock -^b<br>\n";
-$ret = $lockmgr->unlock("db2",array(array('b')));
+$ret = $lockmgr->unlock("db1",array(array('b')));
 if(!strcmp($ret, OPERATION_FAILURE))
 	echo "Error<br>\n";
 elseif($ret)
@@ -107,12 +107,11 @@ echo "Success!<br>\n";
 echo "$value<br>\n";
 }
 $timer = new timer(1);
-for ($i = 1; $i <= 700; $i++) {
+for ($i = 1; $i <= 1000; $i++) {
 $value = $db1->GET(array(0 => 'X', 1 => 1, 2 => 2, 3 => 3));
 }
 echo "$value<br>\n";
 $query_time = $timer->get();
 print_r($query_time);
 $db1->destroy();
-$db2->destroy();
 ?>

@@ -9,7 +9,7 @@ define ("CLIENT_WAIT_TIMEOUT", 	30);
 define ("NO_IMPLEMENT",  "Not implemented");
 define ("OPERATION_FAILURE", 	"Non-fatal error occurred");
 define ("LOCK_INTERVAL",	1);
-define ("SOCKET_ALWAYS_NONBLOCK",	1);
+define ("SOCKET_ALWAYS_NONBLOCK",	0);
 define ("WAIT", 1000); //how long to wait in usecs for a socket to be available before
 		      //a error message is triggered if php is set to emit warnings
 		     //has no effect on performance otherwise. Increase to reduce or eliminate warnings 
