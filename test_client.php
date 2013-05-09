@@ -1,12 +1,12 @@
+
 /* For Testing and examples of how to use this php class */
 <?php
-
-class timer {
+class timer2 {
 	public $start;
 	public $pause_time;
 
 	/*  start the timer  */
-	function timer($start = 0) {
+	function timer2($start = 0) {
 		if($start) { $this->start(); }
 	}
 
@@ -45,8 +45,8 @@ class timer {
 require ("util.inc");
 $lockmgr = new GNP_LOCK_MANAGER();
 $db1 = new GTCM_GNP("db1", DB1, HOST1, PORTNO);
-/*$db2 = new GTCM_GNP("db2", DB2, HOST2, PORTNO);
-*/
+$db2 = new GTCM_GNP("db2", DB2, HOST2, PORTNO);
+
 echo "> lock ^a:0<br>\n";
 $ret = $lockmgr->lockAddImmed("db1", array(array('a')));
 if(!strcmp($ret, OPERATION_FAILURE))
@@ -77,13 +77,17 @@ if(!strcmp($ret, OPERATION_FAILURE))
 elseif($ret)
 	echo "UnLocked<br>\n";
 else echo "Nope<br>\n";
+
 $val = $db1->PUT(array(0 => 'X', 1 => 1, 2 => 2, 3 => 3), "1,2,3");
 $val2 = $db1->PUT(array(0 => 'X', 1 => 1, 2 => 2, 3 => 4), "1,2,4");
 $valid = $db1->ORDER(array(0 => 'X', 1 => 1, 2 => 2, 3 => 3));
 if(!$valid) 
 echo "Failed<br>\n";
 else{
-$subsc = $db1->ORDER(array(0 => 'X', 1 => 1, 2 => 2, 3 => 3));
+$subsc = $db1->PREV(array(0 => 'X', 1 => 1, 2 => 2, 3 => 999999999999999));
+$temp = $subsc->m_GDS_key;
+$subs = $temp->m_subscripts;
+//print_r($subs);
 $value = $db1->GET($subsc);
 echo "Success!<br>\n";
 echo "$value<br>\n";
@@ -106,12 +110,13 @@ $value = $db1->GET($subsc);
 echo "Success!<br>\n";
 echo "$value<br>\n";
 }
-$timer = new timer(1);
-for ($i = 1; $i <= 1000; $i++) {
+$timer = new timer2(1);
+for ($i = 1; $i <= 10000; $i++) {
 $value = $db1->GET(array(0 => 'X', 1 => 1, 2 => 2, 3 => 3));
 }
 echo "$value<br>\n";
 $query_time = $timer->get();
 print_r($query_time);
 $db1->destroy();
+$db2->destroy();
 ?>

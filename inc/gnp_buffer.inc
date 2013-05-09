@@ -1,14 +1,5 @@
 
-
-
-
 <?php
-
-
-
-define ("OP_OK", "\$ok = ((\$this->send()) && (\$this->receive()));");
-define ("CANCEL_OK", "\$ok = ((\$this->urgentSend()) && (\$this->receive()));");
-define ("LK_OK", "\$ok = ((\$this->send()) && (\$this->lockReceive()));");
 
 class GNP_BUFFER
 {
@@ -34,18 +25,10 @@ public	function __construct($socket)
 		
 		$this->m_protocol = new PROTOCOL();
 
-		if(defined("DEBUG"))
-		{
-			echo "PROTOCOL STRING: ";
-			//print_r($this->m_protocol);
-			var_dump($this->m_protocol);
-			echo "END PROTOCOL STRING: ";
-		}
 
 		unset($this->m_last_request);
 
-		if(defined("DEBUG"))
-			echo "GNP_BUFFER established!<br>\n";
+		
 	}
 
 	//returns m_exception object on failure
@@ -65,8 +48,6 @@ public	function doop($op_code)
 		    ($op_code == CMMS_L_LKCANCEL))
 		{
 			$transnum = func_get_arg(2);
-			if(defined("MSG"))
-				echo "transnum: ", $transnum, "<br>\n";
 			$this->putTRANSNUM($transnum);
 		}
 		elseif($op_code == CMMS_S_INTERRUPT)
@@ -125,12 +106,13 @@ public	function doop($op_code)
 		if(($op_code == CMMS_S_TERMINATE) || ($op_code == CMMS_L_LKREQNODE))	
 			$ok = $this->send();
 		elseif($op_code == CMMS_L_LKACQUIRE)
-			eval(LK_OK);  /*$ok = (($this->send()) && ($this->lockReceive()));*/
+		$ok = (($this->send()) && ($this->lockReceive()));
 		elseif($op_code == CMMS_S_INTERRUPT)
-			eval(CANCEL_OK); /*$ok = (($this->urgentSend()) && ($this->receive()));*/
-		else
-			eval(OP_OK); /*$ok = (($this->send()) && ($this->receive()));*/
+		$ok = (($this->urgentSend()) && ($this->receive()));
+		else		
+		$ok = (($this->send()) && ($this->receive()));
 			
+
 		if(($op_code == CMMS_S_TERMINATE)|| ($op_code == CMMS_L_LKREQNODE))
 		{
 			if(!$ok)
@@ -185,13 +167,6 @@ public	function doop($op_code)
 			}
 			else
 			{
-				if(defined("DEBUG") || defined("MSG"))
-				{
-					echo "After EVAL, \$this->m_data: ";
-					print_r($this->m_data);
-					echo "<br>\n";
-				}
-
 				return $this->m_data;
 			}
 		}
@@ -207,16 +182,13 @@ public	function doop($op_code)
 	 */
 private  function send()
 	{
-		if(defined("DEBUG"))
-			echo "In send()...<br>\n";
+		
 
 		//NEW: add 2 bytes to each message, indicating the length of the message,in BIG-ENDIAN mode
 		$preHDR = $this->getLength();
 		$preHDR_packed = pack("n", $preHDR);
 		$this->m_data = $preHDR_packed . $this->m_data;
 		$gnp_msg_len = $preHDR + GNP_PREHDR_LEN;
-		if(defined("DEBUG") || defined("MSG"))
-			$this->show();
 		$fp = $this->m_socket->getSocket();
 		$neg_errno = socket_write($fp, $this->m_data, $gnp_msg_len);
 		if($neg_errno === false)
@@ -227,8 +199,6 @@ private  function send()
 		}
 		else
 		{
-			if(defined("DEBUG")|| defined("MSG"))
-				echo "Message : ", $this->m_last_request, " was sent!<br>\n";
 			return TRUE;
 		}
 	}
@@ -238,11 +208,7 @@ private  function send()
 	 */
 private  function urgentSend()
 	{
-		if(defined("DEBUG"))
-			echo "In urgentSend()...<br>\n";
-
-		if(defined("DEBUG") || defined("MSG"))
-			$this->show();
+		
 		$fp = $this->m_socket->getSocket();
 		$neg_errno = socket_send($fp, $this->m_data, 1, MSG_OOB);
 	
@@ -254,8 +220,6 @@ private  function urgentSend()
 		}
 		else
 		{
-			if(defined("DEBUG")|| defined("MSG"))
-				echo "Message : ", $this->m_last_request, " was sent!<br>\n";
 			return TRUE;
 		}
 	}
@@ -264,13 +228,11 @@ private  function urgentSend()
 	 * returns FALSE otherwise
 	 */
 private  function receive()
-	{
+	{	
 		global $g_endian_convert;
 		global $g_endian;
 		global $g_self_big_endian;
 
-		if(defined("DEBUG") || defined("MSG"))
-			echo "In receive()<br>\n";
 
 		//first, skip the 2 bytes in big endian order
 		$skipped = $this->getPreHDR();
@@ -278,9 +240,6 @@ private  function receive()
 
 		// read the one byte HDR
 		$inBytes = $this->getHDR();
-
-		if(defined("DEBUG")|| defined("MSG"))
-			echo "Past getHDR()<br>\n";
 
 		if(!$inBytes)
 		{
@@ -293,8 +252,6 @@ private  function receive()
 			//force $header to be integer
 			$hdr = 0;
 			$hdr += $this->m_data;
-			if(defined("DEBUG") || defined("MSG"))
-				echo "REPLY HDR = ", $hdr, "<br>\n";
 			if(!$this->matchRequest($hdr))
 			{
 			    $err_msg = "request/response type mismatch. Request = " .
@@ -381,8 +338,6 @@ private  function receive()
 			}
 		}
 
-		if(defined("DEBUG") || defined("MSG"))
-			echo "End of receive...<br>\n";
 		return TRUE;
 	}
 	
@@ -397,25 +352,15 @@ private  function lockReceive()
 
 		if(SOCKET_ALWAYS_NONBLOCK == 0)
 			$this->m_socket->setNonBlock();		
-	
-		if(defined("DEBUG") || defined("MSG"))
-			echo "In lockReceive()<br>\n";
 
 		//first, skip the 2 bytes in big endian order and get the HDR
 		$this->init();
-		
-		if(defined("MSG"))
-			echo "socket is blocked? ", ($this->m_socket->m_blocked?"yes":"no"), "<br>\n";
 		$fp = $this->m_socket->getSocket();
 		$buf = '';
 		$inBytes = socket_recv($fp, $buf, (GNP_PREHDR_LEN + 1), MSG_NOWAIT);
-		echo "Success";
-
+		
 		if($inBytes <= 0)
 		{
-			$mesg = "lockReceive(). Not yet<br>\n";
-			if(defined("MSG"))
-				echo $mesg;
 			$this->m_data = null;
 			if(SOCKET_ALWAYS_NONBLOCK == 0)
 				$this->m_socket->setBlock();
@@ -425,11 +370,7 @@ private  function lockReceive()
 		//data is coming, so pick them up all at once
 		if(($inBytes > 0) && ($inBytes < (GNP_PREHDR_LEN + 1)))	
 		{
-			$mesg = "lock_receiv() : Message is coming.<br>\n";
-			if(defined("MSG"))
-				echo $mesg;
-			
-			$ibuf = $buf;
+						$ibuf = $buf;
 			$alreadyIn = strlen($buf);
 			if(SOCKET_ALWAYS_NONBLOCK == 0)
 			{
@@ -444,7 +385,6 @@ private  function lockReceive()
                                 $inBytes = $alreadyIn;
                                 $buf = $ibuf;
 				$this->m_socket->setNonBlock();
-				echo "Success";
 			}
 			else
 			{
@@ -457,7 +397,6 @@ private  function lockReceive()
 				}while($alreadyIn < (GNP_PREHDR_LEN + 1));
 				$inBytes = $alreadyIn;
 				$buf = $ibuf;
-				echo "SUCCESS";
 			}
 		}	
 	
@@ -468,9 +407,6 @@ private  function lockReceive()
 		//force $header to be integer
 		$hdr = 0;
 		$hdr += $this->m_data;
-
-		if(defined("DEBUG") || defined("MSG"))
-			echo "REPLY HDR = ", $hdr, "<br>\n";
 
 		if(!$this->matchRequest($hdr))
 		{
@@ -510,10 +446,6 @@ private  function lockReceive()
 					$this->m_socket->setBlock();
 				assert (FALSE);
 		}
-	
-
-		if(defined("DEBUG"))
-			echo "End of lockReceive...<br>\n";
 
 		if(SOCKET_ALWAYS_NONBLOCK == 0)
 			$this->m_socket->setBlock();
@@ -524,30 +456,6 @@ private  function init()
 	{
 		$this->m_index = 0;
 		$this->m_data = '';
-	}
-
-	/* for debugging */
-private  function show()		
-	{
-		if (empty($this->m_data))
-			echo "Buffer empty!<br>\n";
-		else
-		{
-			echo "Buffer length = ", strlen($this->m_data), "<br>\n";
-			echo "Buffer contains: <br>\n";
-		
-			$encoded = unpack("C*code", $this->m_data);
-			for($i = 1; $i <= count($encoded); $i++)
-			{
-				$sub = "code" . $i;
-				$data = dechex($encoded[$sub]);
-				$j = $i - 1;
-				
-				echo "m_data [" . $j . "]: " . $data;
-				echo "<br>\n";
-			}
-		
-		}
 	}
 
 	/* can only be used with messages to be sent */
@@ -686,9 +594,7 @@ private  function putString($str_data, $pad_len=0)
 
 static  function getString($bin_data, $length, $trim)
 	{
-		if(defined("DEBUG"))
-			echo "In getString()<br>\n";
-		
+	
 		$realLen = strlen($bin_data);
 		if($realLen != $length)
 			$length = $realLen;
@@ -696,8 +602,6 @@ static  function getString($bin_data, $length, $trim)
 		$template = "a" . $length . "string";
 		$arr = unpack($template, $bin_data);
 		
-		if(defined("DEBUG"))
-			echo "string is: " . $arr['string'] . "<br>\n";
 		
 		if($trim == 0)
 			return $arr['string'];
@@ -781,10 +685,6 @@ private  function putUShort($short_data)
 		global $g_endian;
 		if(empty($g_endian))
 			$g_endian = 'D';
-
-		if(defined("DEBUG"))
-			echo "In putUShort,", $short_data, "<br>\n";
-		
 		$template = $g_ushort_template[$g_endian];
 		$this->m_data .= pack($template, $short_data);
 		$this->m_index += 2;
@@ -813,8 +713,6 @@ private  function getUShort($bin_data)
 
 public  function bufRead($len, $err = 0)
 	{
-		if(defined("MSG"))
-			echo "In bufRead(), \$len = $len<br>\n";
 		$ibuf = '';
 		$buf = '';
 		$inBytes = 0;
@@ -828,19 +726,17 @@ public  function bufRead($len, $err = 0)
 			$inBytes += socket_recv($fp, $buf, $len, MSG_DONTWAIT);
 			$ibuf .= $buf;
 		}while((SOCKET_ALWAYS_NONBLOCK == 1) && ($inBytes < $len) && ($err != 1)); 
-	 
 		return $ibuf;
-		echo "Success";
 	}		
 
 private  function getPreHDR()
 	{
-		if(defined("DEBUG") || defined("MSG"))
-			echo "In getPreHDR()...<br>\n";
-
+	
 		$this->init();
+		
 		$ibuf = $this->bufRead(GNP_PREHDR_LEN);
 		$this->m_data = $this->getNetUShort($ibuf);
+		
 		return TRUE;
 	}
 		
@@ -853,9 +749,7 @@ private  function putHDR($message_type_code)
 	}
 
 private  function getHDR()
-	{
-		if(defined("DEBUG")|| defined("MSG"))
-			echo "In getHDR()<BR>\n";		
+	{	
 
 		$this->init();
 		$ibuf = "";
@@ -867,13 +761,10 @@ private  function getHDR()
 
 private  function getDATA()	
 	{
-		if(defined("DEBUG"))
-			echo "In getDATA()<BR>\n";		
-
+			
 		$this->init();
 		$ibuf = $this->bufRead(VARIABLE_STRING_OVERHEAD);
-		$strLength = $this->getUShort($ibuf);		
-
+		$strLength = $this->getUShort($ibuf);	
 		$ibuf = $this->bufRead($strLength);
 		$this->m_data = $this->getUByte($ibuf);
 		return TRUE;
@@ -922,8 +813,6 @@ private  function putVALUE($value)
 
 private  function getVALUE()
 	{
-		if(defined("DEBUG"))
-			echo "In getVALUE()<br>\n";
 		$this->init();
 
 		$ibuf = $this->bufRead(VARIABLE_STRING_OVERHEAD);
@@ -940,13 +829,7 @@ private  function getERROR()
 		$this->init();
 		$ibuf = $this->bufRead(VARIABLE_STRING_OVERHEAD);
 		$strLength = $this->getUShort($ibuf);
-	
-		if(defined("DEBUG"))
-		{
-			echo "Error string length = ", $strLength . "<br>\n";
-		}
-	
-		$ibuf = $this->bufRead($strLength, 1);
+			$ibuf = $this->bufRead($strLength, 1);
 		$this->m_data = $this->getString($ibuf, $strLength, 0);
 		return TRUE;
 	}
@@ -970,8 +853,6 @@ private  function putPROTOCOL()
 	{
 		if(!defined("S_PROTOCOL"))
 		{
-			if(defined("DEBUG"))
-				echo "this->m_protocol will be translated into a string of 6 * 3 + 1 bytes";
 			//$this->m_protocol is translated into a string of 6 * 3 + 1 bytes
 			$proto_string = "";
 			$proto_string .= $this->m_protocol->m_cpu_type;
@@ -991,8 +872,7 @@ private  function putPROTOCOL()
 		}
 		
 
-		if(defined("DEBUG"))
-			echo "end of putPROTOCOL()<br>\n";
+		
 	}
 
 private  function getPROTOCOL()
@@ -1108,17 +988,11 @@ private  function putPROCNUM($proc_num)
 
 private  function getPROCNUM()
 	{
-		if(defined("DEBUG"))
-			echo "In getPROCNUM()", "<br>\n";
-
+	
 		$this->init();
 		
 		$ibuf = $this->bufRead(2);
 		$this->m_data = $this->getUShort($ibuf);
-
-		if(defined("DEBUG"))
-			echo "Process number: ", $this->m_data, "<br>\n";
-
 		return TRUE;
 	}
 
@@ -1129,17 +1003,11 @@ private  function putREGNUM($reg_num)
 	
 private  function getREGNUM()
 	{
-		if(defined("DEBUG"))
-			echo "In getREGNUM()", "<br>\n";
 
 		$this->init();
 
 		$ibuf = $this->bufRead(1);
 		$this->m_data = $this->getUByte($ibuf);
-
-		if(defined("DEBUG"))
-			echo "Region number: ", $this->m_data, "<br>\n";
-
 		return TRUE;
 	}
 

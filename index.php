@@ -339,14 +339,6 @@ if(isset($reset))
 	$lock_gvns = "";
 }
 
-/*global $global_ref;
-global $lock_gvns;
-global $valid;
-global $gld;
-global $lockmgr;
-global $db_2;
-global $db_1;
-global $dbs; */
 $lock_gvns = array();
 $cmd = mkCmd();
 
@@ -370,6 +362,7 @@ if((isset($submit)) && ($submit == "submit") && ($valid))
 				 if(preg_match("/OPERATION_FAILURE/i",$response))
 					$response = "ERROR, see <a href=\"showerr.php\">error.log</a>";
 				$response = makeGVN($response->m_GDS_key);
+				print_r($response->m_GDS_key->m_subscripts);
 				break;
 
 		case "DATA":	

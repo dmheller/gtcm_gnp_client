@@ -103,13 +103,7 @@ public	function __construct($seed_string, $binary=0)
 			assert(false);
 		}
 		
-		if(defined("D"))
-		{
-			echo "In GDS()<br>\n";
-			var_dump($this->m_global_name);
-			var_dump($this->m_subscripts);
-		}
-	}
+}
 
 	/* DECODE
 	*  input:	a binary string representing the GDS key to be decoded
@@ -119,8 +113,6 @@ public	function __construct($seed_string, $binary=0)
 
 public	function decode($binary_string)
 	{
-		if(defined("DEBUG"))
-			echo "In decode()", "<br>\n";
 
 		//identify key_top, key_end, key_prev
 		$packed_key = substr($binary_string, 0, 6);
@@ -135,13 +127,6 @@ public	function decode($binary_string)
 
 		//rtrim off the ending double NULL's, and explode into an array
 		$trimmed = rtrim($binary_string);
-		
-		if(defined("DEBUG"))
-		{
-			echo "Trimed string: ";
-			$this->showEncoding($trimmed);
-		}
-
 		$boundary = 0;
 		$bound_so_far = 0;
 
@@ -156,24 +141,15 @@ public	function decode($binary_string)
 		$arr = unpack($template, $substr);
 		$decoded[] = $arr['glbname'];
 
-		if(defined("DEBUG"))
-		 	echo "Global name: ", $decoded[0], "<br>\n";
-		 
 		while($boundary = strcspn($trimmed, chr(0)))
 		{
 			$bound_so_far += $boundary + 1;
-			
-			if(defined("DEBUG"))
-				echo "boundary at [" . $bound_so_far . "]<br>\n";
-			
+		
 			$substr = substr($trimmed, 0, $boundary);
 			$trimmed = substr($trimmed, $boundary + 1);
 			$decoded[] = $this->decodeSub($substr);
 		}
 		
-		if(defined("DEBUG"))
-			$this->showDecoded($decoded);
-
 		return $decoded;			
 	}
 
@@ -186,31 +162,17 @@ public	function decode($binary_string)
 
 public	function decodeSub($string)
 	{
-		if(defined("DEBUG"))
-			echo "In decodeSub()", "<br>\n";	
-
 		$char_arr = unpack("C*char", $string);
-
-		if(defined("DEBUG"))
-		{
-			echo "The string is";
-			print_r ($char_arr);
-		}
-				
 		//distinguish between string and numbers
 		if($char_arr['char1'] == 0xff)
 		{
-			if(defined("DEBUG"))
-				echo "It's a string <br>\n";
-				
+			
 			array_shift($char_arr);
 			return $this->decodeStringSub($char_arr);
 		}
 		else		
 		{
-			if(defined("DEBUG"))
-				echo "It's a number <br>\n";
-
+		
 			return $this->decodeNumericSub($char_arr);
 		}
 	}
@@ -223,39 +185,22 @@ public	function decodeSub($string)
 
 public	function decodeStringSub($array)
 	{
-		if(defined("DEBUG"))
-			echo "In decodeStringSub()", "<br>\n";		
-
+		
 		$dec_string = "";
 		$special = FALSE;				//no 0x01 encountered yet
-
-		if(defined("DEBUG"))
-		{
-			echo "The string to be decoded is:";
-			print_r ($array);
-			echo "It has ", count($array), " bytes", "<br>\n";
-		}
 
 		$cnt = count($array);
 
 		for($i = 0; $i < $cnt ; $i++)
 		{
-			if(defined("DEBUG"))
-				echo "\$i = ", $i, "<br>\n";
 
 			$char = array_shift($array);
-			
-			if(defined("DEBUG"))
-				echo "ord(\$char) = ", $char, "<br>\n";			
 			
 			//0x0101 and 0x0102 are special
 			if ((!$special) && ($char == 0x01))
 			{
 				$special = TRUE;
 				
-				if(defined("DEBUG"))
-					echo "0x01 encountered, special to follow...", "<br>\n";
-
 				continue;
 			}
 
@@ -263,9 +208,6 @@ public	function decodeStringSub($array)
 			{
 				$dec_string .= chr(0x00);
 				$special = FALSE;
-
-				if(defined("DEBUG"))
-					echo "0x00 encountered", "<br>\n";
 	
 				continue;
 			}
@@ -274,24 +216,14 @@ public	function decodeStringSub($array)
 			{
 				$dec_string .= chr(0x01);
 				$special = FALSE;
-				
-				if(defined("DEBUG"))
-					echo "0x01 encountered", "<br>\n";
-
+	
 				continue;
 			}
 
 			$dec_string .= chr($char);
 
-			if(defined("DEBUG"))
-				echo "Normal char", "<br>\n";
 		}
 
-		if(defined("DEBUG"))
-		{
-			echo "\$dec_string to be returned: ";
-			var_dump($dec_string);
-		}
 
 		return $dec_string;
 	}
@@ -304,13 +236,9 @@ public	function decodeStringSub($array)
 
 public	function decodeNumericSub($array)
 	{ 
-		if(defined("DEBUG"))
-			echo "In decodeNumericSub", "<br>\n";
 
 		$cnt = count($array);
-		
-		if(defined("DEBUG"))
-			echo $cnt, " bytes in \$array<br>\n";
+
 
 		//zero is a special case
 		if(($cnt == 1) && (array_shift($array) == 0x80))
@@ -321,27 +249,21 @@ public	function decodeNumericSub($array)
 		
 		if ($last == 0xff)
 		{
-			if(defined("DEBUG"))
-				echo "Negative sub", "<br>\n";
+		
 			$cnt--;
 			$this->m_positive_sub = FALSE;
 			$this->m_arrayRep = $array;
 		}
 		else
 		{
-			if(defined("DEBUG"))
-				echo "Positive sub", "<br>\n";
+		
 
 			$this->m_positive_sub = TRUE;
 			array_push($array, $last);
 			$this->m_arrayRep = $array;
 		}
 
-		if(defined("DEBUG"))
-		{
-			echo "\$this->m_arrayRep = ";
-			print_r ($this->m_arrayRep);
-		}
+	
 
 		if (!$this->m_positive_sub)
 		{
@@ -351,32 +273,21 @@ public	function decodeNumericSub($array)
 			$this->m_arrayRep = $temp_arr;
 		}
 
-		if(defined("DEBUG"))
-		{
-			echo "\$this->m_arrayRep, reverted:";
-			print_r ($this->m_arrayRep);
-		}
 
 		//clear the sign bit <7>
 		$first = array_shift($this->m_arrayRep);
 		$first = $first & 0xff;
 
-		if(defined("DEBUG"))
-			echo "Exponent with sign bit set is: ", dechex($first), "<br>\n";
-
+	
 		$first = $first - 0x80;
 		
-		if(defined("DEBUG"))
-			echo "Biased exponent is: ", dechex($first), "<br>\n";
-		
+
 		//unbias the exponent
 		if ($first > 0x3e)
 			$this->m_exp = $first - 0x3f;
 		else
 			$this->m_exp = -(0x3f - $first);
 
-		if(defined("DEBUG"))
-			echo "Exponent = ", $this->m_exp, "<br>\n";
 
 		//subtract one from each byte in mantissa
 		unset($temp_arr);
@@ -472,12 +383,6 @@ public	function encode($op_code)
 		}
 
 		$this->packKey();
-
-		if(defined("DEBUG"))
-		{
-			echo "In encode()", "<br>\n";
-			$this->showEncoding($this->m_encoded);
-		}
 
 		return $this->m_encoded;
 	}
@@ -593,29 +498,21 @@ public	function encodeSubs()
 
 public	function encodeNumericSub($index)
 	{
-		if(defined("DEBUG"))
-			echo "In encodeNumericSub()", "<br>\n";
-		
+
 		if($this->m_subscripts[$index] == 0)
 		{
-			if(defined("DEBUG"))
-				echo "Zero subscript encountered<br>\n";
-			
+
 			$this->zero();	
 		}
 		else
 		{
 			if($this->m_subscripts[$index] > 0)
 			{
-				if(defined("DEBUG"))
-					echo "Positive sub<br>\n";
 
 				$this->m_positive_sub = TRUE;
 			}
 			else
 			{
-				if(defined("DEBUG"))
-					echo "Negative sub<br>\n";
 
 				$this->m_positive_sub = FALSE;
 			}
@@ -663,22 +560,14 @@ static	function isDigit($char)
 
 public	function strip($data)
 	{
-		if(defined("DEBUG"))
-			echo "In strip()", "<br>\n";
-		
+	
 		//need to deal with trailing zero's in integer's too
 		//because PHP automatically expands scientific notation to normal notation
-
 		$new = str_replace("$+0+$", "", $data);
-
 		$lead_zero = TRUE;
 		unset($this->m_bare_digits);		
-
 		$raw = (string) $new;
-		if(defined("DEBUG"))
-			echo "Raw data is: " . $raw . "<br>\n";		
-		
-		for($i = 0; $i < strlen($raw); $i++)
+		for($i = 0, $c = strlen($raw); $i < $c ; $i++)
 		{
 			if($this->isDigit($raw[$i]))
 			{
@@ -695,11 +584,6 @@ public	function strip($data)
 			}
 		}
 
-		if(defined("DEBUG"))
-		{
-			echo "bare digits are: ";
-			print_r($this->m_bare_digits);		
-		}
 	}
 
 	/* NORMALIZE
@@ -716,28 +600,14 @@ public	function strip($data)
 
 public	function normalize($data)
 	{
-		if(defined("DEBUG"))
-			echo "In normalize", "<br>\n";
 
-		assert(strlen($data));
 		$data = abs($data);
 		$dotPos = strpos($data, ".");
 
-		if(defined("DEBUG"))
-			echo "In normalize(), dotPos = ", $dotPos, "<br>\n";
-		
 		if($dotPos === false)
 			return (strlen($data) - 1);
 		$preDot = substr($data, 0, $dotPos);
-	
-		if(defined("DEBUG"))	
-			echo $preDot, "|";
-
 		$postDot = substr($data, $dotPos + 1);
-
-		if(defined("DEBUG"))
-			echo $postDot, "<br>\n";
-
 		switch($dotPos)
 		{
 			case 0: $preDot = 0;
@@ -775,8 +645,6 @@ public	function normalize($data)
 
 public	function doMantissa($index)
 	{
-		if(defined("DEBUG"))
-			echo "In doMantissa()", "<br>\n";
 
 		$sub = $this->m_subscripts[$index];		
 		$scientific = TRUE;
@@ -796,10 +664,6 @@ public	function doMantissa($index)
 			//adjust the exponent if the part prior to $expPos is not normalized
 			$mant = substr($sub, 0, $expPos);
 			$this->m_exp += $this->normalize($mant);
-			
-			if(defined("DEBUG"))
-				echo "m_exp = ", $this->m_exp, "<br>\n";
-		
 			$this->strip($mant);
 			if(count($this->m_bare_digits)%2)
 				$this->m_bare_digits[] = 0;	
@@ -809,22 +673,15 @@ public	function doMantissa($index)
 		if(!$scientific)
 		{
 			$this->m_exp = $this->normalize($sub);
-
-			if(defined("DEBUG"))
-				echo "m_exp= ", $this->m_exp, "<br>\n";
-			
 			$this->strip($sub);
 			if(count($this->m_bare_digits)%2)
 				$this->m_bare_digits[] = 0;
 		}	
 		
 		/* Create packed-decimal representation, adding one to each byte in mantissa */
-		assert(!(count($this->m_bare_digits)%2));
 		$group = count($this->m_bare_digits) / 2;
 
-		if(defined("DEBUG"))
-			echo "\$group = ", $group, "<br>\n";
-		
+	
 		unset($this->m_arrayRep);
 		for($i = 0; $i < $group; $i++)
 		{
@@ -833,14 +690,10 @@ public	function doMantissa($index)
 			$data_lo = $data_lo + 1;
 			$data = $data_hi . dechex($data_lo);
 					
-			if(defined("DEBUG"))
-				echo "\$data = ", hexdec($data), "<br>\n";
-		
+	
 			$this->m_arrayRep[] = $data;
 		}
 
-		if(defined("DEBUG"))
-			print_r($this->m_arrayRep);
 	
 	}
 
@@ -852,22 +705,13 @@ public	function doMantissa($index)
 
 public	function doExp()
 	{
-		if(defined("DEBUG"))
-			echo "In doExp()", "<br>\n";
 
 		$this->m_exp += 0x3F;
 
 		//prepend it to the rest of encoding
 		array_unshift($this->m_arrayRep, $this->m_exp);
 		
-		if(defined("DEBUG"))
-		{
-			echo "<br>\n ";
-			print_r($this->m_arrayRep);
-			echo "The biased exponent is: ";
-			print (dechex($this->m_arrayRep[0]));
-			echo "<br>\n";
-		}
+
 	}
 
 	/* DOSIGN
@@ -878,20 +722,10 @@ public	function doExp()
 
 public	function doSign()
 	{
-		if(defined("DEBUG"))
-			echo "In doSign()", "<br>\n";
 
 		//set exponent sign bit <7>
 		$this->m_arrayRep[0] += 0x80;
 
-		if(defined("DEBUG"))
-		{
-			echo "<br>\n";
-			print_r($this->m_arrayRep);
-			echo "The exponent now is: ";
-			print(dechex($this->m_arrayRep[0]));
-			echo "<br>\n";
-		}
 	}
 
 	/* ASSEMBLE
@@ -902,39 +736,21 @@ public	function doSign()
 
 public	function assemble()
 	{
-		if(defined("DEBUG"))
-			echo "In assemble()", "<br>\n";
 
 		$temp = "";
 		$temp .= pack("C", array_shift($this->m_arrayRep));
-		
-		if(defined("DEBUG"))
-		{
-			echo "After shifting the exponent,";
-			print_r($this->m_arrayRep);
-			echo "\$temp length = ", strlen($temp), "<br>\n";
-			echo "m_arrayRep has this number of elements: ", count($this->m_arrayRep), "<br>\n";
-		}
-
 		for($i = 0; $i < count($this->m_arrayRep); $i++)
 		{
-			if(defined("DEBUG"))
-				echo "m_arrayRep[" . $i . "] -- " . $this->m_arrayRep[$i] . " is being packed.<br>\n";
 
 			//need to adjust for things like 6a
 			$temp_char = $this->m_arrayRep[$i];
 			if(($temp_char[1] == 'a') || ($temp_char[1] == 'A'))
 			{
-				if(defined("DEBUG"))
-					echo "a encountered", "<br>\n";
-				
+	
 				$hi = $temp_char[0];
 				$hi_hex = dechex($hi);
 				$lo = 0x0a;
 				$this->m_arrayRep[$i] = (($hi_hex << 4) | ($lo & 0xff));
-
-				if(defined("DEBUG"))
-					echo "a data changed to: ", $this->m_arrayRep[$i], "<br>\n";
 				$temp .= pack("C", $this->m_arrayRep[$i]);
 				continue;
 			}
@@ -944,18 +760,11 @@ public	function assemble()
 				$temp .= pack("H2", $this->m_arrayRep[$i]);
 			else
 			{
-				if(defined("DEBUG"))
-					echo "Single digit data need to be left padded<br>\n";
 				$temp .= pack("C", $this->m_arrayRep[$i]);
 			}
 
 		}
 		
-		if(defined("DEBUG"))
-		{
-			echo "Finally, \$temp length = ", strlen($temp);
-			echo "<br>\n";
-		}
 
 		if(!$this->m_positive_sub)
 		{
@@ -963,18 +772,6 @@ public	function assemble()
 			$temp .= pack("C", 0xFF);
 		}
 
-
-		if(defined("DEBUG"))
-		{
-			$ntemp = '';
-			$arr = unpack("C*code", $ntemp);
-			for($i = 1; $i <= strlen($ntemp); $i++)
-			{
-				$sub = "code" . $i;
-				echo "code [" . $i . "]: " . dechex($arr[$sub]);
-				echo "<br>\n";
-			}
-		}
 
 		$this->m_encoded .= $temp; 
 	}
@@ -1030,9 +827,7 @@ public	function showDecoded($array)
 
 public	function encodeStringSub($index)
 	{
-		if(defined("DEBUG"))
-			echo "In encodeStringSub()", "<br>\n";
-		
+	
 		if(($index == (count($this->m_subscripts) - 1)) && 
 				($this->m_subscripts[$index] == "")&& 
 				($this->m_order || $this->m_query || $this->m_prev))
@@ -1044,40 +839,26 @@ public	function encodeStringSub($index)
 
 		//now go through each character, paying attention to 0x00 and 0x01
 		$strLength = strlen($this->m_subscripts[$index]);
-		
-		if(defined("DEBUG"))
-		{
-			echo "\$index = " . $index . "<br>\n";
-			echo "\$this->m_subscripts:";
-			var_dump($this->m_subscripts);
-			echo "\$this->m_subscripts[$index] has length: " . $strLength . "<br>\n";
-		}
 
 		for($i = 0; $i < $strLength; $i++)
 		{	
 			$ord = ord($this->m_subscripts[$index][$i]);
-			if(defined("DEBUG"))
-				echo "\$ord = " . $ord . "<br>\n";
 
 			if($ord ==0)
 			{
 				$this->m_encoded .= pack("C", 0x01);
 				$this->m_encoded .= pack("C", 0x01);
-				if(defined("DEBUG"))
-					echo "0x00 encountered for encoding", "<br>\n";
+			
 			}
 			elseif($ord ==1)
 			{
 				$this->m_encoded .= pack("C", 0x01);
 				$this->m_encoded .= pack("C", 0x02);
-				if(defined("DEBUG"))
-					echo "0x01 encountered for encoding", "<br>\n";
+			
 			}
 			else
 			{
 				$this->m_encoded .= pack("C", $ord);
-				if(defined("DEBUG"))
-					echo "Normal character for encoding: $ord<br>\n";
 			}
 		}
 	}
@@ -1200,20 +981,7 @@ public	function __construct()
 				$this->m_endian = ' ';
 			$this->m_proto_filler = $arr[6];
 		}
-		assert(strlen($this->m_cpu_type) == 3);
-		assert(strlen($this->m_os) == 3);
-		assert(strlen($this->m_implementation) == 3);
-		assert(strlen($this->m_version) == 3);
-		assert(strlen($this->m_proto_level) == 3);
-		assert(strlen($this->m_proto_type) == 3);
-		assert(strlen($this->m_endian) == 1);
-
-		if(defined("DEBUG"))
-		{
-			echo "Endian in PROTOCCOL:";
-			var_dump($this->m_endian);
-		}
-	
+		
 	}
 
 public	function matchEndian($peer)
@@ -1297,11 +1065,8 @@ private	function isBigEndian($cpu)
 		$myvar = unpack("S1newval", "10");
 		if ($myvar['newval'] == 0x3031)
 			return FALSE;
-		else
-		{
-			assert($myvar['newval'] == 0x3130);
-			return TRUE;
-		}
+				return TRUE;
+	
 	}
 }
 

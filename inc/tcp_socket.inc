@@ -22,14 +22,10 @@ listener\n");
 		}	
 		else
 		{
-			if (defined("DEBUG"))
-				echo "Socket is established<br>\n";
+			
 			$host = gethostbyname($server);
 			$connect_result = socket_connect($tcpSocket, $host, $port);
 			
-			if (defined("DEBUG"))
-				echo "Connecting to $server on port $port...<br>\n";
-
 			if($connect_result < 0)
 			{
 				catchit(throwit(__FILE__, __LINE__, "TCP_SOCKET", 0, socket_strerror($connect_result)));
@@ -38,8 +34,6 @@ listener\n");
 			$this->m_tcpSocket = $tcpSocket;
 			$this->m_address = $host;
 			$this->m_portno = $port; 
-			if (defined("DEBUG"))
-				echo "Connection to database server " . $server . " established<br>\n";
 		}
 
 		$this->m_err = null;
@@ -63,11 +57,6 @@ public	function setBlock()
 
 public	function setNonBlock()
 	{
-		if(defined("MSG"))
-		{
-			echo "In setNonBlock()<br>\n";
-			echo PHP_VERSION, "<br>\n";
-		}
 		
 		$ret = socket_set_nonblock($this->m_tcpSocket);
 		

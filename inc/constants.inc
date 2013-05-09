@@ -57,7 +57,7 @@ define ("CM_FILLER_SIZE",	 14);
 define ("S_PROTOCOL_FILLER",	"SPACE");
 define ("S_PROTOCOL_PAD_LENGTH", 14);
 define ("PROTO_IMPLEMENTATION",	 "GTM");
-define ("PROTO_VERSION",	 "054"); // set to 054 for gtm version 5.4xxxx 055 for version 5.5xxxx
+define ("PROTO_VERSION",	 "000"); // set to 054 for gtm version 5.4xxxx 055 for version 5.5xxxx
 define ("PROTO_LEVEL", 		 "200");	// DO NOT CHANGE MUST BE SET TO 200 Do not attemp to set to Level 210!!!
 
 $os = php_uname('s');
