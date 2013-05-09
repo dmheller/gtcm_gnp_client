@@ -1,7 +1,6 @@
 <?php
 
 require("tcp_socket.inc");
-//require_once("util.inc");
 require_once("gnp_misc.inc");
 require("gnp_buffer.inc");
 
