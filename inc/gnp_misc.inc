@@ -563,13 +563,14 @@ public	function strip($data)
 	
 		//need to deal with trailing zero's in integer's too
 		//because PHP automatically expands scientific notation to normal notation
-		$new = str_replace("$+0+$", "", $data);
+		//$new = str_replace("0+$", "", $data);
+		$new = rtrim($data, "0");
 		$lead_zero = TRUE;
 		unset($this->m_bare_digits);		
 		$raw = (string) $new;
-		for($i = 0, $c = strlen($raw); $i < $c ; $i++)
+		for($i = 0; $i < strlen($raw) ; $i++)
 		{
-			if($this->isDigit($raw[$i]))
+		  if($this->isDigit($raw[$i]))
 			{
 				$digit = (int) $raw[$i];
 				if (($digit == 0) && (!$lead_zero))
@@ -583,7 +584,7 @@ public	function strip($data)
 				{}
 			}
 		}
-
+	
 	}
 
 	/* NORMALIZE

@@ -43,10 +43,10 @@ class timer2 {
 
 <?php
 require ("util.inc");
-$lockmgr = new GNP_LOCK_MANAGER();
+/*$lockmgr = new GNP_LOCK_MANAGER();*/
 $db1 = new GTCM_GNP("db1", DB1, HOST1, PORTNO);
 $db2 = new GTCM_GNP("db2", DB2, HOST2, PORTNO);
-
+/*
 echo "> lock ^a:0<br>\n";
 $ret = $lockmgr->lockAddImmed("db1", array(array('a')));
 if(!strcmp($ret, OPERATION_FAILURE))
@@ -109,7 +109,7 @@ $subsc = $db1->ORDER(array(0 => 'X', 1 => 1, 2 => 2, 3 => 3));
 $value = $db1->GET($subsc);
 echo "Success!<br>\n";
 echo "$value<br>\n";
-}
+}*/
 $timer = new timer2(1);
 for ($i = 1; $i <= 10000; $i++) {
 $value = $db1->GET(array(0 => 'X', 1 => 1, 2 => 2, 3 => 3));

@@ -9,18 +9,15 @@ var m_index;		//byte length index
 var m_last_request;	//remember the last request so as to verify the response	
 var m_protocol = new PROTOCOL(); //the PROTOCOL being used in INITPROC message
 var _ = require('underscore')._;
-define ('OP_OK', '\ok = ((\this.send()) && (\this.receive()));');
-define ('CANCEL_OK', '\ok = ((\this.urgentSend()) && (\this.receive()));');
-define ('LK_OK', '\ok = ((\this.send()) && (\this.Receive()));');
 var defineClass = require("./defineClass.js").defineClass;
 
 var gnp_buffer = defineClass({
 	constructor: function(socket){
 
 	
-		this.init();
-		this.m_socket = socket;
-        this.m_last_request;
+	this.init();
+	this.m_socket = socket;
+	this.m_last_request;
 
 },
 
@@ -41,7 +38,7 @@ var gnp_buffer = defineClass({
 		{
 			transnum = func_get_arg(2);
 			if(defined('MSG'))
-				document.write( 'transnum: ', transnum, '<br>\n');
+			document.write( 'transnum: ', transnum, '<br>\n');
 			this.putTRANSNUM(transnum);
 		}
 		else if(op_code == m.CMMS_S_INTERRUPT)
@@ -100,11 +97,11 @@ var gnp_buffer = defineClass({
 		if((op_code == m.CMMS_S_TERMINATE) || (op_code == m.CMMS_L_LKREQNODE))	
 			ok = this.send();
 		else if(op_code == m.CMMS_L_LKACQUIRE)
-			eval(LK_OK);
+			ok = (this.send() && this.receive());
 		else if(op_code == m.CMMS_S_INTERRUPT)
-			eval(CANCEL_OK);
+			ok = (this.urgentSend() && this.receive());
 		else
-			eval(OP_OK);
+			ok = (this.send() && this.receive());
 
 		if((op_code == m.CMMS_S_TERMINATE)|| (op_code == m.CMMS_L_LKREQNODE))
 		{
@@ -114,7 +111,6 @@ var gnp_buffer = defineClass({
 					func = 'TERMINATE()';
 				else func = 'LKREQNODE()';
 				err_msg = func + 'failed. Message not sent.';
-			//	err = throwit(, , 'doop', 1, err_msg);
 				return err;
 			}
 			else
