@@ -136,12 +136,6 @@ function gds(seed_string, binary)
 		//rtrim off the ending double null's, and explode into an array
 		trimmed = rtrim(binary_string);
 		
-		if(defined('DEBUG'))
-		{
-			document.write( 'Trimed string: ');
-			this.showEncoding(trimmed);
-		}
-
 		boundary = 0;
 		bound_so_far = 0;
 

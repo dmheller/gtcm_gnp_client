@@ -37,8 +37,6 @@ var gnp_buffer = defineClass({
 		    (op_code == m.CMMS_L_LKCANCEL))
 		{
 			transnum = func_get_arg(2);
-			if(defined('MSG'))
-			document.write( 'transnum: ', transnum, '<br>\n');
 			this.putTRANSNUM(transnum);
 		}
 		else if(op_code == m.CMMS_S_INTERRUPT)
@@ -105,12 +103,13 @@ var gnp_buffer = defineClass({
 
 		if((op_code == m.CMMS_S_TERMINATE)|| (op_code == m.CMMS_L_LKREQNODE))
 		{
-			if(ok)
+			if(!ok)
 			{
 				if(op_code == m.CMMS_S_TERMINATE)
 					func = 'TERMINATE()';
 				else func = 'LKREQNODE()';
 				err_msg = func + 'failed. Message not sent.';
+				console.log(err_msg);
 				return err;
 			}
 			else
@@ -120,10 +119,10 @@ var gnp_buffer = defineClass({
 			(op_code == m.CMMS_Q_PUT) || 
 			(op_code == m.CMMS_Q_ZWITHDRAW))
 		{
-			if(ok)
+			if(!ok)
 			{
 				err_msg = 'Operation (' + op_code + ') failed.';
-		        console.log(err_msg);
+				console.log(err_msg);
 				return err;
 			}
 			else
@@ -131,7 +130,7 @@ var gnp_buffer = defineClass({
 		}
 		else if(op_code == m.CMMS_L_LKACQUIRE)
 		{
-			if(ok)
+			if(!ok)
 			{
 				err_msg = 'lock(' + op_code + ') failed.<br.\n';
 				console.log(err_msg);
@@ -148,7 +147,7 @@ var gnp_buffer = defineClass({
 		}
 		else
 		{
-			if(ok)
+			if(!ok)
 			{
 				err_msg = 'Operation (' + op_code + ') failed.';
 				console.log(err_msg);
@@ -224,7 +223,7 @@ var gnp_buffer = defineClass({
 
 		// read the one byte HDR
 		inBytes = this.getHDR();
-		if(inBytes)
+		if(!inBytes)
 		{
 			err_msg = 'No header received, check network connection.';
 			console.log(err_msg);	
@@ -238,7 +237,7 @@ var gnp_buffer = defineClass({
 			if(this.matchRequest(hdr))
 			{
 				err_msg = 'request/response type mismatch. Request = ' +
-					this.m_last_request + ' Response = ' + hdr;
+				this.m_last_request + ' Response = ' + hdr;
 				console.log(err_msg);
 				return false;
 			}
@@ -250,7 +249,7 @@ var gnp_buffer = defineClass({
 		case m.CMMS_M_LKDELETED:
 		case m.CMMS_M_LKSUSPENDED: break;
 		case m.CMMS_T_INITPROC:   
-							if(this.getPROTOCOL()) 
+							if(!this.getPROTOCOL()) 
 								return false;
 							
 							if(this.m_protocol.matchEndian(this.m_data))
@@ -263,14 +262,14 @@ var gnp_buffer = defineClass({
 							else
 							g_endian = (g_self_big_endian, 'L',  'B');
 
-							if(this.m_protocol.match(this.m_data))
+							if(!this.m_protocol.match(this.m_data))
 							{
 								err_msg = 'PROTOCOL mismatch.';
 								console.log(err_msg);
 				
 								return false;
 							}							
-							if(this.getPROCNUM()) return false;
+							if(!this.getPROCNUM()) return false;
 							break;
 
 		case	m.CMMS_T_REGNUM:	if(this.getREGINFO()) return false;
@@ -339,9 +338,6 @@ var gnp_buffer = defineClass({
 
 		if(inBytes <= 0)
 		{
-			mesg = 'lockReceive(). Not yet<br>\n';
-			if(defined('MSG'))
-				document.write( mesg);
 			this.m_data = null;
 			return true;
 		}
@@ -350,8 +346,6 @@ var gnp_buffer = defineClass({
 		if((inBytes > 0) && (inBytes < (GNP_PREHDR_LEN + 1)))	
 		{
 			mesg = 'lock_receiv() : Message is coming.<br>\n';
-			if(defined('MSG'))
-				document.write( mesg);
 			
 			ibuf = buf;
 			alreadyIn = strlen(buf);
@@ -426,10 +420,6 @@ var gnp_buffer = defineClass({
 					this.m_socket.setBlock();
 				assert (false);
 		}
-	
-
-		if(defined('DEBUG'))
-			document.write( 'End of lockReceive...<br>\n');
 
 		if(SOCKET_ALWAYS_NONBLOCK == 0)
 			this.m_socket.setBlock();

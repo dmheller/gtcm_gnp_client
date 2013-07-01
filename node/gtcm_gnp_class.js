@@ -84,8 +84,6 @@ constructor: function(dat_file, server, port){
 			
 		if(is_null(value))
 		{
-			err_msg = 'Global reference undefined in GET().';
-			console.log(err_msg);
 			return OPERATION_FAILURE;
 		}
 		else

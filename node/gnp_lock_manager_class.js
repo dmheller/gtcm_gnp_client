@@ -406,7 +406,6 @@ constructor: function(gld){
 	urgentCancel: function(acq_db){
 		if(response = GLOBALS[acq_db].LKURGCANCEL(this.m_transnum))
 		{
-			err = throwit('urgentCancel', response.getLevel() + 1);
 			return err;
 		}
 		return true;
@@ -419,7 +418,6 @@ constructor: function(gld){
                         obj_name = this[obj_nameVal];
 				if(response = GLOBALS[obj_name].LKCANCEL(this.m_laflag, this.m_transnum))
 				{
-					//err = throwit(, , 'cancel', response.getLevel() + 1);
 					return err;
 				};
 			};
@@ -428,11 +426,8 @@ constructor: function(gld){
 		{
 			for (var obj_nameVal in this) {
                         obj_name = this[obj_nameVal];
-				if(defined('MSG'))
-					document.write( obj_name);
 				if(response = GLOBALS[obj_name].LKCANCEL(this.m_laflag, this.m_transnum))
 				{
-				//	err = throwit(, , 'cancel', response.getLevel() + 1);
 					return err;
 				};
 			};
@@ -480,18 +475,13 @@ constructor: function(gld){
 				return OPERATION_FAILURE;
 			else
 			{
-				if(defined('lock'))
-					document.write( 'immediate lock: response = ', response, '<br>\n');
 				if(response == m.CMMS_M_LKABORT)
 				{
 					if(ret = this.cancel())
 					{
-				//		mcatch(throwit(, , 'immediateLock', ret.getLevel() + 1));
 						return OPERATION_FAILURE;
 					}
 
-					if(defined('lock'))
-						document.write( 'did not get it<br>\n');
 					return false;
 				}else if(response == m.CMMS_M_LKGRANTED)
 				{
@@ -505,7 +495,6 @@ constructor: function(gld){
 			};
 		}
 	
-		if(defined('lock')) document.write( 'got it<br>\n');
 		return true;
 	},
 
@@ -823,44 +812,3 @@ constructor: function(gld){
 		},
 	});
 	
-//testing
-/*
-$lockmgr = new GNP_LOCK_MANAGER();
-$db1 = new gtcm_gnp(DB1, HOST1, PORTNO);
-$db2 = new gtcm_gnp(DB2, HOST2, PORTNO);
-
-echo '> lock ^a:0<br>\n';
-$ret = $lockmgr->lockAddImmed('db1', array(array(a)));
-
-if(!strcmp($ret, OPERATION_FAILURE))
-	echo 'Error<br>\n';
-else if($ret)
-	echo 'locked<br>\n';
-else
-	echo 'Nope<br>\n';
-
-echo 'sleeping for 10 seconds...<br>\n';
-sleep(10);
-
-echo '> lock +^b:0<br>\n';
-$ret = $lockmgr->lockIncrAddImmed('db2', array(array(b)));
-
-if(!strcmp($ret, OPERATION_FAILURE))
-	echo 'Error<br>\n';
-else if($ret)
-	echo 'locked<br>\n';
-else echo 'Nope<br>\n';
-
-echo '> lock +^b:20<br>\n';
-$ret = $lockmgr->lockIncrAdd('db2', array(array(b)), 20);
-
-if(!strcmp($ret, OPERATION_FAILURE))
-	echo 'Error<br>\n';
-else if($ret)
-	echo 'locked<br>\n';
-else echo 'Nope<br>\n';
-$db1->destroy();
-
-$db2->destroy();
-
-*/
